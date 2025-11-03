@@ -23,8 +23,10 @@ git clone --single-branch --branch package git@github.com:e-marshall/ipccar5.git
 Download input data and setup sub-directories to hold data related to this module:
 ```shell
 mkdir -p ./data/input
+#Download input data for glaciers submodule
 curl -sL https://zenodo.org/record/7478192/files/ipccar5_glaciers_project_data.tgz | tar -zx -C ./data/input
-
+#Download input data for icesheets submodule
+curl -sL https://zenodo.org/record/7478192/files/ipccar5_icesheets_project_data.tgz | tar -zx -C ./data/input
 #curl -sL https://zenodo.org/records/6419954/files/modules_data.zip -o modules_data.zip
 #unzip modules_data.zip -d ./data/input
 
