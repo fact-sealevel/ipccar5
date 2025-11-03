@@ -53,7 +53,7 @@ docker run --rm \
 -v /path/to/data/input:/mnt/ipccar5_data_out \
 ipccar5 glaciers \
 --scenario 'ssp585' --nsamps 500 \
---climate-fname /mnt/ipccar5_data_in/ipccar5glaciers.mimicoupling585.temperature.fair.temperature_climate.nc \
+--climate-fname /mnt/ipccar5_data_in/temperature_climate.nc \
 --glacier-fraction-file /mnt/ipccar5_data_in/glacier_fraction.txt \
 --location-file /mnt/ipccar5_data_in/location.lst \
 --fingerprint-dir /mnt/ipccar5_data_in/FPRINT \
