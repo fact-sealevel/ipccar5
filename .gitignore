@@ -32,6 +32,7 @@ MANIFEST
 *.manifest
 *.spec
 
+history/
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
@@ -50,7 +51,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
-
+.history/
 # Translations
 *.mo
 *.pot
@@ -117,6 +118,7 @@ ipython_config.py
 .pdm-python
 .pdm-build/
 
+data/
 # pixi
 #   Similar to Pipfile.lock, it is generally recommended to include pixi.lock in version control.
 # pixi.lock
