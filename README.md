@@ -23,25 +23,42 @@ git clone --single-branch --branch package git@github.com:e-marshall/ipccar5.git
 Download input data and setup sub-directories to hold data related to this module:
 ```shell
 mkdir -p ./data/input
-curl -sL https://zenodo.org/records/6419954/files/modules_data.zip -o modules_data.zip
-unzip modules_data.zip -d ./data/input
+curl -sL https://zenodo.org/record/7478192/files/ipccar5_glaciers_project_data.tgz | tar -zx -C ./data/input
+
+#curl -sL https://zenodo.org/records/6419954/files/modules_data.zip -o modules_data.zip
+#unzip modules_data.zip -d ./data/input
+
+# Fingerprint input data for postprocessing step
+curl -sL https://zenodo.org/record/7478192/files/grd_fingerprints_data.tgz | tar -zx -C ./data/input
+
 echo "New_York	12	40.70	-74.01" > ./data/input/location.lst
+
 # Output projections will appear here
 mkdir -p ./data/output
 ```
 
-Next, run the container associated with this package. For example: 
+Next, create a docker image that will be used to run the application. 
 ```shell
 docker build -t ipccar5 .
 ```
 
+Create a container based on the image (`docker run --rm`), mount volumes for both the input and output data sub-directories and set the working directory to the location of the app in the container (`-w`). Then, call the application, passing the desired input arguments and making sure that the paths for each input argument are relative to the mounted volumes. Replace the paths for each mounted volume with the location of `data/input/` and `data/output/` on your machine.
+
+>[!IMPORTANT]
+> This module **requires** a `climate.nc` file that is the output of the FACTS FAIR module, which is created outside of this prototype. Before running the example, manually move the file into `./data/input` and ensure that the filename matches that passed to `climate-file`. The number of samples (`--nsamps`) drawn in the FAIR run must pass the number of samples specified in this run. 
+
 ```shell
 docker run --rm \
--v ./data/input:/mnt/ipccar5_data_in:ro \
--v ./data/output:/mnt/ipccar5_data_out \
-ipccar5 \
-
-
+-v /path/to/data/input:/mnt/ipccar5_data_in:ro \
+-v /path/to/data/input:/mnt/ipccar5_data_out \
+ipccar5 glaciers \
+--scenario 'ssp585' --nsamps 500 \
+--climate-fname /mnt/ipccar5_data_in/ipccar5glaciers.mimicoupling585.temperature.fair.temperature_climate.nc \
+--glacier-fraction-file /mnt/ipccar5_data_in/glacier_fraction.txt \
+--location-file /mnt/ipccar5_data_in/location.lst \
+--fingerprint-dir /mnt/ipccar5_data_in/FPRINT \
+--global-output-sl-file /mnt/ipccar5_data_out/glaciers_gslr.nc \
+--local-output-sl-file /mnt/ipccar5_data_out/glaciers_lslr.nc
 ```
 
 ## Features

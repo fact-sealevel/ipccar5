@@ -5,8 +5,11 @@ from ipccar5.ipccar5_glaciers_fit import ar5_fit_glaciers
 from ipccar5.ipccar5_glaciers_project import ar5_project_glaciers
 from ipccar5.ipccar5_glaciers_postprocess import ar5_postprocess_glaciers
 
+@click.group(context_settings={"help_option_names": ["-h", "--help"]})
+def main():
+    pass
 
-@click.command()
+@main.command()
 @click.option(
     "--scenario",
     type=str,
@@ -153,11 +156,6 @@ from ipccar5.ipccar5_glaciers_postprocess import ar5_postprocess_glaciers
     type=str,
     help="Path to local output sea-level file",
 )
-@click.group(context_settings={"help_option_names": ["-h", "--help"]})
-def main():
-    pass
-
-
 def glaciers(
     scenario,
     refyear_start,
