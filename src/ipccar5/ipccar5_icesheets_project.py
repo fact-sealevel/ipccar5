@@ -1,14 +1,12 @@
 # GMSLR projection program used for IPCC WG1 AR5
 # Translated from IDL to Python 2.7 by Jonathan Gregory 23.10.19
 
-import os
 import numpy as np
-import pickle
 import argparse
 import time
 import re
-import sys
-from netCDF4 import Dataset
+import xarray as xr
+# from netCDF4 import Dataset
 
 
 class ProjectionError(Exception):
@@ -17,12 +15,12 @@ class ProjectionError(Exception):
 
 def project_greensmb(zt, fit_dict, nt, rng):
     # Extract relevant parameters from the fit dictionary
-    dtgreen = fit_dict['dtgreen']
-    fnlogsd = fit_dict['fnlogsd']
-    febound = fit_dict['febound']
-    fgreendyn = fit_dict['fgreendyn']
-    dgreen = fit_dict['dgreen']
-    mSLEoGt = fit_dict['mSLEoGt']
+    dtgreen = fit_dict["dtgreen"]
+    fnlogsd = fit_dict["fnlogsd"]
+    febound = fit_dict["febound"]
+    fgreendyn = fit_dict["fgreendyn"]
+    dgreen = fit_dict["dgreen"]
+    mSLEoGt = fit_dict["mSLEoGt"]
 
     # random log-normal factor
     fn = np.exp(rng.standard_normal(nt) * fnlogsd)
@@ -36,7 +34,7 @@ def project_greensmb(zt, fit_dict, nt, rng):
 
     greensmb = np.cumsum(greensmbrate, axis=1)[:]
     greensmb += (1 - fgreendyn) * dgreen
-    print(greensmb.shape)
+    #print(greensmb.shape)
 
     # return greensmb.transpose((1,0,2))
     return greensmb
@@ -45,7 +43,7 @@ def project_greensmb(zt, fit_dict, nt, rng):
 def fettweis(ztgreen, mSLEoGt):
     # Greenland SMB in m yr-1 SLE from global mean temperature anomaly
     # using Eq 2 of Fettweis et al. (2013)
-    return (71.5 * ztgreen + 20.4 * (ztgreen ** 2) + 2.8 * (ztgreen ** 3)) * mSLEoGt
+    return (71.5 * ztgreen + 20.4 * (ztgreen**2) + 2.8 * (ztgreen**3)) * mSLEoGt
 
 
 def project_antsmb(zit, fit_dict, nr, nt, rng, fraction=None):
@@ -55,21 +53,22 @@ def project_antsmb(zit, fit_dict, nr, nt, rng, fraction=None):
     # fraction -- array-like, random numbers for the SMB-dynamic feedback
 
     # Extract relevant parameters from the fit dictionary
-    pcoK = fit_dict['pcoK']
-    KoKg = fit_dict['KoKg']
-    mSLEoGt = fit_dict['mSLEoGt']
-    smax = fit_dict['smax']
+    pcoK = fit_dict["pcoK"]
+    KoKg = fit_dict["KoKg"]
+    mSLEoGt = fit_dict["mSLEoGt"]
+    smax = fit_dict["smax"]
 
     # Generate a distribution of products of the above two factors
-    pcoKg = (pcoK[0] + rng.standard_normal([nr, nt, 1]) * pcoK[1]) * \
-            (KoKg[0] + rng.standard_normal([nr, nt, 1]) * KoKg[1])
+    pcoKg = (pcoK[0] + rng.standard_normal([nr, nt, 1]) * pcoK[1]) * (
+        KoKg[0] + rng.standard_normal([nr, nt, 1]) * KoKg[1]
+    )
     meansmb = 1923  # model-mean time-mean 1979-2010 Gt yr-1 from 13.3.3.2
     moaoKg = -pcoKg * 1e-2 * meansmb * mSLEoGt  # m yr-1 of SLE per K of global warming
 
     if fraction is None:
         fraction = rng.random([nr, nt, 1])
     elif fraction.size != nr * nt:
-        raise ProjectionError('Project antsmb: fraction is the wrong size')
+        raise ProjectionError("Project antsmb: fraction is the wrong size")
     else:
         fraction.shape = (nr, nt, 1)
 
@@ -82,46 +81,65 @@ def project_antsmb(zit, fit_dict, nr, nt, rng, fraction=None):
 
 def project_greendyn(fit_dict, nm, nt, rng, data_years):
     # Extract relevant parameters from the fit dictionary
-    fgreendyn = fit_dict['fgreendyn']
-    dgreen = fit_dict['dgreen']
-    gdyn_finalrange = fit_dict['gdyn_finalrange']
+    fgreendyn = fit_dict["fgreendyn"]
+    dgreen = fit_dict["dgreen"]
+    gdyn_finalrange = fit_dict["gdyn_finalrange"]
 
     gdyn_startratemean = 0.63 * fgreendyn
     gdyn_startratepm = 0.17 * fgreendyn
 
-    gdyn_timeprojection = time_projection(gdyn_startratemean, gdyn_startratepm, gdyn_finalrange, nm, nt, data_years,
-                                          rng)
+    gdyn_timeprojection = time_projection(
+        gdyn_startratemean, gdyn_startratepm, gdyn_finalrange, nm, nt, data_years, rng
+    )
 
-    return (gdyn_timeprojection + fgreendyn * dgreen)
+    return gdyn_timeprojection + fgreendyn * dgreen
 
 
 def project_antdyn(fit_dict, nm, nt, data_years, rng, fraction=None):
     # Extract relevant parameters from the fit dictionary
-    dant = fit_dict['dant']
-    adyn_startratemean = fit_dict['adyn_startratemean']
-    adyn_startratepm = fit_dict['adyn_startratepm']
-    adyn_finalrange = fit_dict['adyn_finalrange']
+    dant = fit_dict["dant"]
+    adyn_startratemean = fit_dict["adyn_startratemean"]
+    adyn_startratepm = fit_dict["adyn_startratepm"]
+    adyn_finalrange = fit_dict["adyn_finalrange"]
 
-    adyn_timeprojection = time_projection(adyn_startratemean, adyn_startratepm, adyn_finalrange, nm, nt, data_years,
-                                          rng, fraction=fraction)
+    adyn_timeprojection = time_projection(
+        adyn_startratemean,
+        adyn_startratepm,
+        adyn_finalrange,
+        nm,
+        nt,
+        data_years,
+        rng,
+        fraction=fraction,
+    )
 
     return adyn_timeprojection + dant
 
 
-def time_projection(startratemean, startratepm, finalrange, nr, nt, data_years, rng, nfinal=1, fraction=None):
+def time_projection(
+    startratemean,
+    startratepm,
+    finalrange,
+    nr,
+    nt,
+    data_years,
+    rng,
+    nfinal=1,
+    fraction=None,
+):
     # Return projection of a quantity which is a quadratic function of time
     # startratemean, startratepm -- rate of GMSLR at the start in mm yr-1, whose
-    #		likely range is startratemean +- startratepm
+    # likely range is startratemean +- startratepm
     # finalrange -- two-element list giving likely range in m for GMSLR at the end
     # nfinal -- int, optional, number of years at the end over which finalrange is
-    #		a time-mean; by default 1 => finalrange is the value for the last year
+    # a time-mean; by default 1 => finalrange is the value for the last year
     # fraction -- array-like, optional, random numbers in the range 0 to 1,
-    #		by default uniformly distributed
+    # by default uniformly distributed
 
     if fraction is None:
         fraction = rng.random([nr, nt, 1])
     elif fraction.size != nr * nt:
-        raise ProjectionError('Time Projection: fraction is the wrong size')
+        raise ProjectionError("Time Projection: fraction is the wrong size")
     fraction = fraction.reshape(nr, nt, 1)
 
     # Number of years
@@ -129,15 +147,17 @@ def time_projection(startratemean, startratepm, finalrange, nr, nt, data_years, 
     nyr = np.flatnonzero(data_years == 2100)
 
     # For terms where the rate increases linearly in time t, we can write GMSLR as
-    #		S(t) = a*t**2 + b*t
+    # S(t) = a*t**2 + b*t
     # where a is 0.5*acceleration and b is start rate. Hence
-    #		a = S/t**2-b/t
+    # a = S/t**2-b/t
     momm = 1e-3  # convert mm yr-1 to m yr-1
     startrate = (startratemean + startratepm * np.array([-1, 1], dtype=float)) * momm
     finalyr = np.arange(nfinal) - nfinal + nyr + 1  # last element ==nyr
     # If nfinal=1, the following is equivalent to
     # np.array(finalrange,dtype=np.float)/nyr**2-startrate/nyr
-    acceleration = (np.array(finalrange, dtype=float) - startrate * finalyr.mean()) / (finalyr ** 2).mean()
+    acceleration = (np.array(finalrange, dtype=float) - startrate * finalyr.mean()) / (
+        finalyr**2
+    ).mean()
 
     # Create a field of elapsed time in years
     time = data_years
@@ -145,9 +165,11 @@ def time_projection(startratemean, startratepm, finalrange, nr, nt, data_years, 
 
     # Calculate two-element list containing fields of the minimum and maximum
     # timeseries of projections, then calculate random ensemble within envelope
-    range = [float(acceleration[i]) * (time ** 2) + float(startrate[i]) * time for i in [0, 1]]
+    range = [
+        float(acceleration[i]) * (time**2) + float(startrate[i]) * time for i in [0, 1]
+    ]
 
-    projection = (range[0] * (1 - fraction) + range[1] * fraction)
+    projection = range[0] * (1 - fraction) + range[1] * fraction
 
     return projection
 
@@ -168,48 +190,67 @@ def ExtrapolateRate(sample, targyears, cyear_start, cyear_end):
 
     # Make a new projection
     ext_sample = sample
-    ext_sample[targyears >= cyear_end] = proj_end + (rate * (targyears[targyears >= cyear_end] - cyear_end))
+    ext_sample[targyears >= cyear_end] = proj_end + (
+        rate * (targyears[targyears >= cyear_end] - cyear_end)
+    )
 
     # Return this sample
-    return (ext_sample)
+    return ext_sample
 
 
-def ar5_project_icesheets(rng_seed, pyear_start, pyear_end, pyear_step, cyear_start, cyear_end, nmsamps, ntsamps,
-                          nsamps, pipeline_id):
+def ar5_project_icesheets(
+    rng_seed,
+    pyear_start,
+    pyear_end,
+    pyear_step,
+    cyear_start,
+    cyear_end,
+    nmsamps,
+    ntsamps,
+    nsamps,
+    pipeline_id,
+    preprocess_dict,
+    fit_dict,
+    icesheet_fraction_file,
+    global_gis_output_file,
+    global_ais_output_file,
+    global_wais_output_file,
+    global_eais_output_file,
+):
     # Define the target years
     targyears = np.arange(pyear_start, pyear_end + 1, pyear_step)
 
     # Load the preprocessed data
-    data_file = "{}_data.pkl".format(pipeline_id)
-    try:
-        f = open(data_file, 'rb')
-    except:
-        print("Cannot open data file\n")
+    # data_file = "{}_data.pkl".format(pipeline_id)
+    # try:
+    #    f = open(data_file, 'rb')
+    # except:
+    #    print("Cannot open data file\n")
 
     # Extract the data variables
-    my_data = pickle.load(f)
-    f.close()
+    # my_data = pickle.load(f)
+    # f.close()
 
-    temp_samples = my_data['temp_samples']
-    inttemp_samples = my_data['inttemp_samples']
-    temp_mean = my_data['temp_mean']
-    temp_sd = my_data['temp_sd']
-    inttemp_mean = my_data['inttemp_mean']
-    inttemp_sd = my_data['inttemp_sd']
-    data_years = my_data['data_years']
-    startyr = my_data["startyr"]
-    scenario = my_data['scenario']
+    temp_samples = preprocess_dict["temp_samples"]
+    inttemp_samples = preprocess_dict["inttemp_samples"]
+    # temp_mean = preprocess_dict["temp_mean"]
+    # temp_sd = preprocess_dict["temp_sd"]
+    # inttemp_mean = preprocess_dict["inttemp_mean"]
+    # inttemp_sd = preprocess_dict["inttemp_sd"]
+    data_years = preprocess_dict["data_years"]
+    startyr = preprocess_dict["startyr"]
+    scenario = preprocess_dict["scenario"]
 
     # Load the fit data
-    data_file = "{}_fit.pkl".format(pipeline_id)
-    try:
-        f = open(data_file, 'rb')
-    except:
-        print("Cannot open fit file\n")
+    # data_file = "{}_fit.pkl".format(pipeline_id)
+    # try:
+    #    f = open(data_file, 'rb')
+    # except:
+    #    print("Cannot open fit file\n")
 
     # Extract the fit variables
-    my_fit = pickle.load(f)
-    f.close()
+    # my_fit = pickle.load(f)
+    # f.close()
 
     # Set the seed for the random number generator
     rng = np.random.default_rng(rng_seed)
@@ -222,28 +263,30 @@ def ar5_project_icesheets(rng_seed, pyear_start, pyear_end, pyear_step, cyear_st
         ntsamps = nmsamps
 
     # Generate perfectly correlated samples
-    z = rng.standard_normal(ntsamps)[:, np.newaxis]
+    # z = rng.standard_normal(ntsamps)[:, np.newaxis]
 
     # For each quantity, mean + standard deviation * normal random number
     # NEEDS TO BE FIXED TO USE SAMPS RATHER THAN RESANMPLING
-    zt = temp_mean + (temp_sd * z)
-    zit = inttemp_mean + (inttemp_sd * z)
+    # zt = temp_mean + (temp_sd * z)
+    # zit = inttemp_mean + (inttemp_sd * z)
 
     # Number of realizations
-    nr = nmsamps
+    # nr = nmsamps
 
     # Number of years in the data record
-    nyr = len(data_years)
+    # nyr = len(data_years)
 
     # correlation between antsmb and antdyn
     # fraction=rng.random(nmsamps * ntsamps)
     fraction = rng.random(nsamps)
 
     # Project the SMB and Dynamics portions of each ice sheet
-    greensmb = project_greensmb(temp_samples, my_fit, nsamps,rng)
-    greendyn = project_greendyn(my_fit, 1, nsamps, rng,data_years)
-    antsmb = project_antsmb(inttemp_samples, my_fit, 1, nsamps, rng, fraction=fraction)
-    antdyn = project_antdyn(my_fit, 1, nsamps, data_years, rng, fraction=fraction)
+    greensmb = project_greensmb(temp_samples, fit_dict, nsamps, rng)
+    greendyn = project_greendyn(fit_dict, 1, nsamps, rng, data_years)
+    antsmb = project_antsmb(
+        inttemp_samples, fit_dict, 1, nsamps, rng, fraction=fraction
+    )
+    antdyn = project_antdyn(fit_dict, 1, nsamps, data_years, rng, fraction=fraction)
 
     # Center the projections to the baseyear
     baseyear_idx = np.flatnonzero(data_years == startyr)
@@ -274,17 +317,55 @@ def ar5_project_icesheets(rng_seed, pyear_start, pyear_end, pyear_step, cyear_st
     # If the user wants to extrapolate projections based on rates, do so here
     if cyear_start or cyear_end:
         for i in np.arange(nsamps):
-            greendyn[i, :] = ExtrapolateRate(greendyn[i, :], targyears, cyear_start, cyear_end)
-            antdyn[i, :] = ExtrapolateRate(antdyn[i, :], targyears, cyear_start, cyear_end)
+            greendyn[i, :] = ExtrapolateRate(
+                greendyn[i, :], targyears, cyear_start, cyear_end
+            )
+            antdyn[i, :] = ExtrapolateRate(
+                antdyn[i, :], targyears, cyear_start, cyear_end
+            )
 
     # Sum up the components
     greennet = greendyn + greensmb
     antnet = antdyn + antsmb
     totalnet = greennet + antnet
 
+    gis_ds = make_projection_ds(
+        ice_source="GIS",
+        global_samps=greennet,
+        years=data_years,
+        samples=np.arange(greennet.shape[0]),
+        locations=np.array([-1]),
+        scenario=scenario,
+        baseyear=startyr,
+    )
+    gis_ds.to_netcdf(
+        path=global_gis_output_file,
+        mode="w",
+        format="NETCDF4",
+        encoding={
+            "sea_level_change": {"zlib": True, "complevel": 4}
+        },  # maybe don't need this
+    )
+    ais_ds = make_projection_ds(
+        ice_source="AIS",
+        global_samps=antnet,
+        years=data_years,
+        samples=np.arange(antnet.shape[0]),
+        locations=np.array([-1]),
+        scenario=scenario,
+        baseyear=startyr,
+    )
+    ais_ds.to_netcdf(
+        path=global_ais_output_file,
+        mode="w",
+        format="NETCDF4",
+        encoding={
+            "sea_level_change": {"zlib": True, "complevel": 4}
+        },  # maybe don't need this
+    )
     # Write the netCDF output
-    WriteNetCDF(greennet, "GIS", data_years, scenario, pipeline_id)
-    WriteNetCDF(antnet, "AIS", data_years, scenario, pipeline_id)
+    # WriteNetCDF(greennet, "GIS", data_years, scenario, pipeline_id)
+    # WriteNetCDF(antnet, "AIS", data_years, scenario, pipeline_id)
     # WriteNetCDF(antsmb, "AISSMB", data_years, scenario, pipeline_id)
     # WriteNetCDF(antdyn, "AISDYN", data_years, scenario, pipeline_id)
 
@@ -299,9 +380,8 @@ def ar5_project_icesheets(rng_seed, pyear_start, pyear_end, pyear_step, cyear_st
     ice_region_names = []
 
     # Open the icesheet fraction file
-    ice_frac_file = os.path.join(os.path.dirname(__file__), "icesheet_fraction.txt")
-    with open(ice_frac_file, 'r') as fp:
-
+    # ice_frac_file = os.path.join(os.path.dirname(__file__), "icesheet_fraction.txt")
+    with open(icesheet_fraction_file, "r", encoding="utf-8") as fp:
         # Get the fraction years from the header line
         header_items = re.split(",\s*", fp.readline())
         ice_frac_years = np.array([int(x) for x in header_items[1:]])
@@ -330,91 +410,203 @@ def ar5_project_icesheets(rng_seed, pyear_start, pyear_end, pyear_step, cyear_st
     aissamps = antnet * ice_frac
 
     # Save the global glacier and ice caps projections to a pickle
-    output = {"gissamps": greennet, "aissamps": antnet, "totsamps": totalnet, \
-              "waissamps": aissamps[:, 0, :], "eaissamps": aissamps[:, 1, :], "data_years": data_years}
-    outfile = open(os.path.join(os.path.dirname(__file__), "{}_projections.pkl".format(pipeline_id)), 'wb')
-    pickle.dump(output, outfile)
-    outfile.close()
+    output = {
+        "gissamps": greennet,
+        "aissamps": antnet,
+        "totsamps": totalnet,
+        "waissamps": aissamps[:, 0, :],
+        "eaissamps": aissamps[:, 1, :],
+        "data_years": data_years,
+    }
+    # outfile = open(os.path.join(os.path.dirname(__file__), "{}_projections.pkl".format(pipeline_id)), 'wb')
+    # pickle.dump(output, outfile)
+    # outfile.close()
 
     # Write the estimated east and west AIS contributions to netCDF files
-    WriteNetCDF(aissamps[:, 0, :], "WAIS", data_years, scenario, pipeline_id)
-    WriteNetCDF(aissamps[:, 1, :], "EAIS", data_years, scenario, pipeline_id)
+    wais_samps = aissamps[:, 0, :]
+    eais_samps = aissamps[:, 1, :]
 
-    return (0)
+    wais_ds = make_projection_ds(
+        ice_source="WAIS",
+        global_samps=wais_samps,
+        years=data_years,
+        samples=np.arange(wais_samps.shape[0]),
+        locations=np.array([-1]),
+        scenario=scenario,
+        baseyear=startyr,
+    )
+    wais_ds.to_netcdf(
+        path=global_wais_output_file,
+        mode="w",
+        format="NETCDF4",
+        encoding={
+            "sea_level_change": {"zlib": True, "complevel": 4}
+        },  # maybe don't need this
+    )
+    eais_ds = make_projection_ds(
+        ice_source="EAIS",
+        global_samps=eais_samps,
+        years=data_years,
+        samples=np.arange(eais_samps.shape[0]),
+        locations=np.array([-1]),
+        scenario=scenario,
+        baseyear=startyr,
+    )
+    eais_ds.to_netcdf(
+        path=global_eais_output_file,
+        mode="w",
+        format="NETCDF4",
+        encoding={
+            "sea_level_change": {"zlib": True, "complevel": 4}
+        },  # maybe don't need this
+    )
+    # WriteNetCDF(aissamps[:, 0, :], "WAIS", data_years, scenario, pipeline_id)
+    # WriteNetCDF(aissamps[:, 1, :], "EAIS", data_years, scenario, pipeline_id)
 
-
-def WriteNetCDF(icesamps, icetype, data_years, scenario, pipeline_id):
-    # Flatten the samples
-    # icesamps = icesamps.T
-
-    # Write the total global projections to a netcdf file
-    nc_filename = os.path.join(os.path.dirname(__file__), "{0}_{1}_globalsl.nc".format(pipeline_id, icetype))
-    rootgrp = Dataset(nc_filename, "w", format="NETCDF4")
-
-    # Define Dimensions
-    nyr = len(data_years)
-    nsamps = icesamps.shape[0]
-    year_dim = rootgrp.createDimension("years", nyr)
-    samp_dim = rootgrp.createDimension("samples", nsamps)
-    loc_dim = rootgrp.createDimension("locations", 1)
-
-    # Populate dimension variables
-    year_var = rootgrp.createVariable("years", "i4", ("years",))
-    samp_var = rootgrp.createVariable("samples", "i8", ("samples",))
-    loc_var = rootgrp.createVariable("locations", "i8", ("locations",))
-    lat_var = rootgrp.createVariable("lat", "f4", ("locations",))
-    lon_var = rootgrp.createVariable("lon", "f4", ("locations",))
-
-    # Create a data variable
-    samps = rootgrp.createVariable("sea_level_change", "f4", ("samples", "years", "locations"), zlib=True, complevel=4)
-
-    # Assign attributes
-    rootgrp.description = "Global SLR contribution from {} according to AR5 workflow"
-    rootgrp.history = "Created " + time.ctime(time.time())
-    rootgrp.source = "FACTS: {0} - {1}".format(pipeline_id, scenario)
-    samps.units = "mm"
-
-    # Put the data into the netcdf variables
-    year_var[:] = data_years
-    samp_var[:] = np.arange(nsamps)
-    samps[:, :, :] = icesamps[:, :, np.newaxis]
-    lat_var[:] = np.inf
-    lon_var[:] = np.inf
-    loc_var[:] = -1
-
-    # Close the netcdf
-    rootgrp.close()
-
-    return (0)
+    return output
 
 
-if __name__ == '__main__':
+def make_projection_ds(
+    ice_source, global_samps, years, samples, locations, scenario, baseyear
+):
+    """
+    Create an xarray Dataset for global sea level rise projections from ice sheet samples.
+
+    Parameters
+    ----------
+    ice_source : str
+        Name of the ice sheet source (e.g., 'EAIS', 'WAIS', 'AIS', 'GIS').
+    global_samps : array-like
+        Array of global sea level change samples, shape (samples, years).
+    years : array-like
+        Array of projection years.
+    samples : array-like
+        Array of sample indices.
+    locations : array-like
+        Array of location indices (typically a single value for global projections).
+    scenario : str
+        Emissions scenario name.
+    baseyear : int
+        Reference year for projections.
+
+    Returns
+    -------
+    xarray.Dataset
+        Dataset containing sea level change data and metadata, with dimensions ('samples', 'years', 'locations').
+
+    Notes
+    -----
+    - The returned dataset includes variables for sea level change, latitude, and longitude, as well as metadata attributes.
+    - Latitude and longitude are set to NaN (np.inf) for global projections.
+    """
+    data = np.asarray(global_samps, dtype=np.float32)[:, :, np.newaxis]
+
+    ds = xr.Dataset(
+        data_vars={
+            "sea_level_change": (
+                ("samples", "years", "locations"),
+                data,
+                {"units": "mm"},
+            ),
+            "lat": (
+                ("locations",),
+                np.array([np.float32(np.inf)], dtype=np.float32),
+            ),
+            "lon": (
+                ("locations",),
+                np.array([np.float32(np.inf)], dtype=np.float32),
+            ),
+        },
+        coords={
+            "years": (("years",), years),
+            "samples": (("samples",), samples),
+            "locations": (("locations",), locations),
+        },
+        attrs={
+            "description": f"Global SLR contribution from {ice_source} from the Bamber et al. 2019 IPCC AR6 workflow",
+            "history": "Created " + time.ctime(time.time()),
+            "scenario": scenario,
+            "baseyear": baseyear,
+        },
+    )
+    return ds
+
+
+if __name__ == "__main__":
     # Initialize the command-line argument parser
     parser = argparse.ArgumentParser(
-        description="Run the icesheets projection stage for the AR5 SLR projection workflow", \
-        epilog="Note: This is meant to be run as part of the Framework for the Assessment of Changes To Sea-level (FACTS)")
+        description="Run the icesheets projection stage for the AR5 SLR projection workflow",
+        epilog="Note: This is meant to be run as part of the Framework for the Assessment of Changes To Sea-level (FACTS)",
+    )
 
     # Define the command line arguments to be expected
-    parser.add_argument('--nmsamps', help="Number of method samples to generate [default=1000]", default=1000, type=int)
-    parser.add_argument('--ntsamps', help="Number of climate samples to generate [default=450]", default=450, type=int)
-    parser.add_argument('--nsamps',
-                        help="Total number of samples to generate (replaces \'nmsamps\' and \'ntsamps\' if provided)",
-                        default=None, type=int)
-    parser.add_argument('--seed', help="Seed value for random number generator [default=1234]", default=1234, type=int)
-    parser.add_argument('--pyear_start', help="Projection year start [default=2020]", default=2020, type=int)
-    parser.add_argument('--pyear_end', help="Projection year end [default=2100]", default=2100, type=int)
-    parser.add_argument('--pyear_step', help="Projection year step [default=10]", default=10, type=int)
-    parser.add_argument('--crateyear_start', help="Constant rate calculation for projections starts at this year",
-                        default=None, type=int)
-    parser.add_argument('--crateyear_end', help="Constant rate calculation for projections ends at this year",
-                        default=None, type=int)
-    parser.add_argument('--pipeline_id', help="Unique identifier for this instance of the module")
+    parser.add_argument(
+        "--nmsamps",
+        help="Number of method samples to generate [default=1000]",
+        default=1000,
+        type=int,
+    )
+    parser.add_argument(
+        "--ntsamps",
+        help="Number of climate samples to generate [default=450]",
+        default=450,
+        type=int,
+    )
+    parser.add_argument(
+        "--nsamps",
+        help="Total number of samples to generate (replaces 'nmsamps' and 'ntsamps' if provided)",
+        default=None,
+        type=int,
+    )
+    parser.add_argument(
+        "--seed",
+        help="Seed value for random number generator [default=1234]",
+        default=1234,
+        type=int,
+    )
+    parser.add_argument(
+        "--pyear_start",
+        help="Projection year start [default=2020]",
+        default=2020,
+        type=int,
+    )
+    parser.add_argument(
+        "--pyear_end", help="Projection year end [default=2100]", default=2100, type=int
+    )
+    parser.add_argument(
+        "--pyear_step", help="Projection year step [default=10]", default=10, type=int
+    )
+    parser.add_argument(
+        "--crateyear_start",
+        help="Constant rate calculation for projections starts at this year",
+        default=None,
+        type=int,
+    )
+    parser.add_argument(
+        "--crateyear_end",
+        help="Constant rate calculation for projections ends at this year",
+        default=None,
+        type=int,
+    )
+    parser.add_argument(
+        "--pipeline_id", help="Unique identifier for this instance of the module"
+    )
 
     # Parse the arguments
     args = parser.parse_args()
 
     # Run the projection process on the files specified from the command line argument
-    ar5_project_icesheets(args.seed, args.pyear_start, args.pyear_end, args.pyear_step, args.crateyear_start,
-                          args.crateyear_end, args.nmsamps, args.ntsamps, args.nsamps, args.pipeline_id)
+    ar5_project_icesheets(
+        args.seed,
+        args.pyear_start,
+        args.pyear_end,
+        args.pyear_step,
+        args.crateyear_start,
+        args.crateyear_end,
+        args.nmsamps,
+        args.ntsamps,
+        args.nsamps,
+        args.pipeline_id,
+    )
 
     exit()

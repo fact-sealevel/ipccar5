@@ -23,9 +23,7 @@ def ar5_preprocess_glaciers(
     end_year,
     tlm_flag,
     pipeline_id,
-    climate_fname=None,
-    climate_means_fname=None,
-    climate_sds_fname=None,
+    climate_fname,
 ):
     # Define the input data directory
 
