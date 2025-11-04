@@ -33,8 +33,6 @@ mkdir -p ./data/input
 curl -sL https://zenodo.org/record/7478192/files/ipccar5_glaciers_project_data.tgz | tar -zx -C ./data/input
 #Download input data for icesheets submodule
 curl -sL https://zenodo.org/record/7478192/files/ipccar5_icesheets_project_data.tgz | tar -zx -C ./data/input
-#curl -sL https://zenodo.org/records/6419954/files/modules_data.zip -o modules_data.zip
-#unzip modules_data.zip -d ./data/input
 
 # Fingerprint input data for postprocessing step
 curl -sL https://zenodo.org/record/7478192/files/grd_fingerprints_data.tgz | tar -zx -C ./data/input
@@ -126,17 +124,14 @@ Options:
                                 'nmsamps' and 'ntsamps' if provided)
   --use-gmip [0|1|2]            Use the GMIP calibration  [default: 2]
   --glacier-fraction-file TEXT  Path to glacier fraction file
-  --global-output-sl-file TEXT  Path to global output sea-level file
-  --climate-means-fname TEXT    Path to climate data means file (if
-                                tlm_data=0)
-  --climate-sds-fname TEXT      Path to climate data standard deviations file
-                                (if tlm_data=0)
+  --global-output-file TEXT     Path to global output sea-level file
   --location-file TEXT          File that contains name, id, lat, and lon of
                                 points for localization
   --chunksize INTEGER           Number of locations to process at a time
   --fingerprint-dir TEXT        Path to fingerprint directory  [required]
-  --local-output-sl-file TEXT   Path to local output sea-level file
+  --local-output-file TEXT      Path to local output sea-level file
   -h, --help                    Show this message and exit.
+
 ```
 
 See this help documentation by passing the `--help` flag when running the application, for example:
@@ -161,6 +156,6 @@ docker build -t ipccar5 .
 
 ## Support
 
-Source code is available online at https://github.com/facts-org/ipccar5. This software is open source, available under the MIT license.
+Source code is available online at https://github.com/fact-sealevel/ipccar5. This software is open source, available under the MIT license.
 
-Please file issues in the issue tracker at https://github.com/facts-org/ipccar5/issues.
+Please file issues in the issue tracker at https://github.com/fact-sealevel/ipccar5/issues.
