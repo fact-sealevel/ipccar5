@@ -31,7 +31,7 @@ def ar5_project_glaciers(
     nsamps,
     pipeline_id,
     glacier_fraction_file,
-    global_output_sl_file,
+    global_output_file,
 ):
     # Define the target years
     # Creates an array from pyear_start to pyear_end in steps of pyear_steps to serve as the projection window
@@ -197,7 +197,7 @@ def ar5_project_glaciers(
     )
 
     ds.to_netcdf(
-        path=global_output_sl_file,
+        global_output_file,
         mode="w",
         format="NETCDF4",
         engine="netcdf4",
@@ -246,7 +246,7 @@ def ar5_project_glaciers(
 
     gicsamps = total_glac_samps * glac_frac
 
-    print(gicsamps.shape)
+    #print(gicsamps.shape)
 
     # Save the global glacier and ice caps projections to a pickle
     output = {

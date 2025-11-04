@@ -28,7 +28,7 @@ def ar5_postprocess_glaciers(
     project_dict,
     preprocess_dict,
     fingerprint_dir,
-    local_output_sl_file=None,
+    local_output_file=None,
 ):
     # Extract the projection data from the file
     gicsamps = project_dict["gicsamps"]
@@ -104,9 +104,9 @@ def ar5_postprocess_glaciers(
         attrs=ncvar_attributes,
     )
 
-    if local_output_sl_file:
+    if local_output_file:
         glac_out.to_netcdf(
-            local_output_sl_file,
+            local_output_file,
             encoding={
                 "sea_level_change": {
                     "dtype": "f4",

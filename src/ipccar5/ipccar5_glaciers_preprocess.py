@@ -28,33 +28,33 @@ def ar5_preprocess_glaciers(
     # Define the input data directory
 
     # Load the two-layer model data
-    if tlm_flag:  # may want to take out tlm_flag since it must be 1?
-        # Import the data
-        tlm_dict = Import2lmData(
-            "surface_temperature",
-            scenario,
-            refyear_start=refyear_start,  # was 1986,
-            refyear_end=refyear_end,  # was 2005,
-            climate_fname=climate_fname,
-        )
+    #if tlm_flag:  # may want to take out tlm_flag since it must be 1?
+    # Import the data
+    tlm_dict = Import2lmData(
+        "surface_temperature",
+        scenario,
+        refyear_start=refyear_start,  # was 1986,
+        refyear_end=refyear_end,  # was 2005,
+        climate_fname=climate_fname,
+    )
 
-        # Filter the data for the appropriate years
-        filtered_data_dict = Filter2lmData(
-            tlm_dict,
-            filter_years=np.arange(start_year, end_year),  # was 2301)
-        )
+    # Filter the data for the appropriate years
+    filtered_data_dict = Filter2lmData(
+        tlm_dict,
+        filter_years=np.arange(start_year, end_year),  # was 2301)
+    )
 
-        # Extract the years
-        data_years = filtered_data_dict["years"]
+    # Extract the years
+    data_years = filtered_data_dict["years"]
 
-        # FOR THE TEMPORARY 2LM DATA ONLY - USES ONLY 44 UNIQUE TRAJECTORIES
-        # Find the unique temperature trajectories
-        # temp_samples = np.unique(filtered_data_dict["samples"], axis=0)
-        temp_samples = filtered_data_dict["samples"]
+    # FOR THE TEMPORARY 2LM DATA ONLY - USES ONLY 44 UNIQUE TRAJECTORIES
+    # Find the unique temperature trajectories
+    # temp_samples = np.unique(filtered_data_dict["samples"], axis=0)
+    temp_samples = filtered_data_dict["samples"]
 
-        # Find the mean and sd of the ensemble
-        temp_mean = np.nanmean(temp_samples, axis=0)
-        temp_sd = np.nanstd(temp_samples, axis=0)
+    # Find the mean and sd of the ensemble
+    temp_mean = np.nanmean(temp_samples, axis=0)
+    temp_sd = np.nanstd(temp_samples, axis=0)
 
     # else:
     # Define the input data files

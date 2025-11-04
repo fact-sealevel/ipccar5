@@ -131,19 +131,9 @@ def main():
     help="Path to glacier fraction file",
 )
 @click.option(
-    "--global-output-sl-file",
+    "--global-output-file",
     type=str,
     help="Path to global output sea-level file",
-)
-@click.option(
-    "--climate-means-fname",
-    type=str,
-    help="Path to climate data means file (if tlm_data=0)",
-)
-@click.option(
-    "--climate-sds-fname",
-    type=str,
-    help="Path to climate data standard deviations file (if tlm_data=0)",
 )
 @click.option(
     "--location-file",
@@ -159,7 +149,7 @@ def main():
     "--fingerprint-dir", type=str, help="Path to fingerprint directory", required=True
 )
 @click.option(
-    "--local-output-sl-file",
+    "--local-output-file",
     type=str,
     help="Path to local output sea-level file",
 )
@@ -181,13 +171,11 @@ def glaciers(
     nsamps,
     use_gmip,
     glacier_fraction_file,
-    climate_means_fname,
-    climate_sds_fname,
-    global_output_sl_file,
+    global_output_file,
     location_file,
     chunksize,
     fingerprint_dir,
-    local_output_sl_file,
+    local_output_file,
 ):
     click.echo("Hello from ipccar5-glaciers!")
 
@@ -218,7 +206,7 @@ def glaciers(
         nsamps=nsamps,
         pipeline_id=pipeline_id,
         glacier_fraction_file=glacier_fraction_file,
-        global_output_sl_file=global_output_sl_file,
+        global_output_file=global_output_file,
     )
 
     ar5_postprocess_glaciers(
@@ -228,7 +216,7 @@ def glaciers(
         project_dict=project_dict,
         preprocess_dict=preprocess_dict,
         fingerprint_dir=fingerprint_dir,
-        local_output_sl_file=local_output_sl_file,
+        local_output_file=local_output_file,
     )
 
 

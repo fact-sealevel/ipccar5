@@ -34,7 +34,7 @@ def project_greensmb(zt, fit_dict, nt, rng):
 
     greensmb = np.cumsum(greensmbrate, axis=1)[:]
     greensmb += (1 - fgreendyn) * dgreen
-    #print(greensmb.shape)
+    # print(greensmb.shape)
 
     # return greensmb.transpose((1,0,2))
     return greensmb
