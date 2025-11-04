@@ -246,7 +246,7 @@ def ar5_project_glaciers(
 
     gicsamps = total_glac_samps * glac_frac
 
-    #print(gicsamps.shape)
+    # print(gicsamps.shape)
 
     # Save the global glacier and ice caps projections to a pickle
     output = {

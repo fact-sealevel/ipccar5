@@ -20,8 +20,6 @@ def main():
 @click.option(
     "--scenario",
     type=str,
-    # default="ssp585",
-    # show_default=True,
     help="Scenario",
 )
 @click.option(
