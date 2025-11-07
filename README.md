@@ -64,8 +64,8 @@ ipccar5 glaciers \
 --glacier-fraction-file /mnt/ipccar5_data_in/glacier_fraction.txt \
 --location-file /mnt/ipccar5_data_in/location.lst \
 --fingerprint-dir /mnt/ipccar5_data_in/FPRINT \
---global-output-sl-file /mnt/ipccar5_data_out/glaciers_gslr.nc \
---local-output-sl-file /mnt/ipccar5_data_out/glaciers_lslr.nc
+--global-output-file /mnt/ipccar5_data_out/glaciers_gslr.nc \
+--local-output-file /mnt/ipccar5_data_out/glaciers_lslr.nc
 ```
 
 To run the icesheets sub-module:
