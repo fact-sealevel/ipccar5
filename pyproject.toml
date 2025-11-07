@@ -1,7 +1,7 @@
 [project]
 name = "ipccar5"
 version = "0.1.0"
-description = "Add your description here"
+description = "A containerized application implementing both the glaciers and icesheets submodules of the ipccar5 module in the Framework for Assessing Changes to Sea-level (FACTS)."
 readme = "README.md"
 authors = [
     { name = "Emma Marshall", email = "emarshall@rhg.com" }
