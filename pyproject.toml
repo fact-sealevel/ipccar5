@@ -1,0 +1,31 @@
+[project]
+name = "ipccar5"
+version = "0.1.0"
+description = "A containerized application implementing both the glaciers and icesheets submodules of the ipccar5 module in the Framework for Assessing Changes to Sea-level (FACTS)."
+readme = "README.md"
+authors = [
+    { name = "Emma Marshall", email = "emarshall@rhg.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "click>=8.3.0",
+    "dask>=2025.10.0",
+    "h5py==3.14.0",
+    "netcdf4==1.7.2",
+    "numpy>=2.3.4",
+    "scipy>=1.16.2",
+    "xarray>=2025.10.1",
+    "zarr>=3.1.3",
+]
+
+[project.scripts]
+ipccar5 = "ipccar5:cli.main"
+
+[build-system]
+requires = ["uv_build>=0.8.11,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.0",
+]
