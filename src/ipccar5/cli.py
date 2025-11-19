@@ -246,13 +246,6 @@ def glaciers(
     help="Year from which to start integrating temperature",
 )
 @click.option(
-    "--end-year",
-    default=2151,  # 2301,
-    show_default=True,
-    type=int,
-    help="Year to end the projection (Used in preprocess).",
-)
-@click.option(
     "--tlm-flag",
     default=1,
     show_default=True,
@@ -379,7 +372,6 @@ def glaciers(
 def icesheets(
     scenario,
     start_year,
-    end_year,
     tlm_flag,
     pipeline_id,
     climate_fname,
