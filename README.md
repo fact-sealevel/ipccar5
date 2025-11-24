@@ -21,16 +21,16 @@ See IPCC AR5 WG1 13.SM.1.4 - 13.SM.1.6 for details.
 
 Clone the repository and create directories to hold input and output data. 
 ```shell
-#git clone git@github.com:fact-sealevel/ipccar5.git
-# ^eventually, for now:
-git clone --single-branch --branch package git@github.com:e-marshall/ipccar5.git
+git clone git@github.com:fact-sealevel/ipccar5.git
 ```
 
 Download input data and setup sub-directories to hold data related to this module:
 ```shell
 mkdir -p ./data/input
+
 #Download input data for glaciers submodule
 curl -sL https://zenodo.org/record/7478192/files/ipccar5_glaciers_project_data.tgz | tar -zx -C ./data/input
+
 #Download input data for icesheets submodule
 curl -sL https://zenodo.org/record/7478192/files/ipccar5_icesheets_project_data.tgz | tar -zx -C ./data/input
 
@@ -42,12 +42,6 @@ echo "New_York	12	40.70	-74.01" > ./data/input/location.lst
 # Output projections will appear here
 mkdir -p ./data/output
 ```
-
-Next, create a docker image that will be used to run the application. 
-```shell
-docker build -t ipccar5 .
-```
-
 Create a container based on the image (`docker run --rm`), mount volumes for both the input and output data sub-directories and set the working directory to the location of the app in the container (`-w`). Then, call the application, passing the desired input arguments and making sure that the paths for each input argument are relative to the mounted volumes. Replace the paths for each mounted volume with the location of `data/input/` and `data/output/` on your machine.
 
 >[!IMPORTANT]
@@ -58,7 +52,7 @@ To run the glaciers sub-module:
 docker run --rm \
 -v /path/to/data/input:/mnt/ipccar5_data_in:ro \
 -v /path/to/data/input:/mnt/ipccar5_data_out \
-ipccar5 glaciers \
+ghcr.io/fact-sealevel/ipccar5:latest glaciers \
 --scenario 'ssp585' --nsamps 500 \
 --climate-fname /mnt/ipccar5_data_in/temperature_climate.nc \
 --glacier-fraction-file /mnt/ipccar5_data_in/glacier_fraction.txt \
@@ -73,7 +67,7 @@ To run the icesheets sub-module:
 docker run --rm \
 -v /path/to/data/input:/mnt/ipccar5_data_in:ro \
 -v /path/to/data/input:/mnt/ipccar5_data_out \
-ipccar5 icesheets \
+ghcr.io/fact-sealevel/ipccar5:latest icesheets \
 --scenario 'ssp585' --nsamps 500 \
 --climate-fname /mnt/ipccar5_data_in/temperature_climate.nc \
 --icesheet-fraction-file /mnt/ipccar5_data_in/icesheet_fraction.txt \
