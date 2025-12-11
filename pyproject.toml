@@ -29,3 +29,6 @@ build-backend = "uv_build"
 dev = [
     "ruff>=0.14.0",
 ]
+
+[tool.ruff]
+lint.ignore = ["F841"]

@@ -3,44 +3,7 @@ import sys
 import h5py
 import re
 
-"""
-Import2lmData()
 
-Imports two-layer model data set provided by Tim Hermans on 27 October 2020.  This
-function reads in the netCDF file and filters the data for the variable, and scenario
-of interest.  Additional filtering according to years, reference year(s), etc. will be
-handled in another script.
-
-"""
-"""
-def Import2lmData(variable="tmix", scenario="ssp585", directory="./"):
-
-	# Open the netcdf file
-	ncfiles = {"tmix": os.path.join(directory, "scmpy2LM_RCMIP_CMIP6calpm_ens_tmix.nc"), \
-				"tdeep": os.path.join(directory, "scmpy2LM_RCMIP_CMIP6calpm_ens_tdeep.nc"), \
-				"ohc": os.path.join(directory, "scmpy2LM_RCMIP_CMIP6calpm_ens_t_ohc.nc")}
-	nc = Dataset(ncfiles[variable], "r")
-
-	# Extract the years and scenarios
-	years = nc.variables["years"][:]
-	scenarios = nc.variables["scenario"][:]
-
-	# Which scenario matches the one requested
-	scenario_idx = np.flatnonzero(scenarios == scenario)
-
-	# Extract the samples [samples, years]
-	samps = np.squeeze(nc.variables[variable][scenario_idx,:,:])
-
-	# Close the netcdf file
-	nc.close()
-
-	# Create the 2lm dictionary
-	out_dict = {"samples": samps, "years": years}
-
-	return(out_dict)
-
-
-"""
 """
 Import2lmData()
 
@@ -147,7 +110,6 @@ def Import2lmData(
 
     # Create the 2lm dictionary
     out_dict = {"samples": samps.T, "years": years}
-
     return out_dict
 
 
