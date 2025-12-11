@@ -233,10 +233,10 @@ def ar5_project_icesheets(
 
     temp_samples = preprocess_dict["temp_samples"]
     inttemp_samples = preprocess_dict["inttemp_samples"]
-    # temp_mean = preprocess_dict["temp_mean"]
-    # temp_sd = preprocess_dict["temp_sd"]
-    # inttemp_mean = preprocess_dict["inttemp_mean"]
-    # inttemp_sd = preprocess_dict["inttemp_sd"]
+    temp_mean = preprocess_dict["temp_mean"]
+    temp_sd = preprocess_dict["temp_sd"]
+    inttemp_mean = preprocess_dict["inttemp_mean"]
+    inttemp_sd = preprocess_dict["inttemp_sd"]
     data_years = preprocess_dict["data_years"]
     startyr = preprocess_dict["startyr"]
     scenario = preprocess_dict["scenario"]
@@ -263,18 +263,18 @@ def ar5_project_icesheets(
         ntsamps = nmsamps
 
     # Generate perfectly correlated samples
-    # z = rng.standard_normal(ntsamps)[:, np.newaxis]
+    z = rng.standard_normal(ntsamps)[:, np.newaxis]
 
     # For each quantity, mean + standard deviation * normal random number
     # NEEDS TO BE FIXED TO USE SAMPS RATHER THAN RESANMPLING
-    # zt = temp_mean + (temp_sd * z)
-    # zit = inttemp_mean + (inttemp_sd * z)
+    zt = temp_mean + (temp_sd * z)
+    zit = inttemp_mean + (inttemp_sd * z)
 
     # Number of realizations
-    # nr = nmsamps
+    nr = nmsamps
 
     # Number of years in the data record
-    # nyr = len(data_years)
+    nyr = len(data_years)
 
     # correlation between antsmb and antdyn
     # fraction=rng.random(nmsamps * ntsamps)
