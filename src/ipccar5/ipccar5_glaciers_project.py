@@ -195,7 +195,7 @@ def ar5_project_glaciers(
             "scenario": scenario,
         },
     )
-    ds['sea_level_change'] = ds['sea_level_change'].astype('float32')
+    ds["sea_level_change"] = ds["sea_level_change"].astype("float32")
     ds.to_netcdf(
         global_output_file,
         mode="w",

@@ -1,5 +1,4 @@
 import click
-import numpy as np
 
 from ipccar5.ipccar5_glaciers_preprocess import ar5_preprocess_glaciers
 from ipccar5.ipccar5_glaciers_fit import ar5_fit_glaciers
@@ -14,6 +13,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 @click.group(context_settings={"help_option_names": ["-h", "--help"]})
 def main():
@@ -35,21 +35,21 @@ def main():
 )
 @click.option(
     "--refyear-end",
-    default=2005, 
+    default=2005,
     show_default=True,
     type=int,
     help="End year for reference period",
 )
 @click.option(
     "--start-year",  # this is same as baseyear
-    default=2005,  
+    default=2005,
     show_default=True,
     type=int,
     help="Year from which to start integrating temperature",
 )
 @click.option(
     "--end-year",
-    default=2301,  
+    default=2301,
     show_default=True,
     type=int,
     help="Year to end the projection (Used in preprocess).",
@@ -191,11 +191,10 @@ def glaciers(
         pipeline_id,
         climate_fname=climate_fname,
     )
-    
+
     fit_dict = ar5_fit_glaciers(
         start_year=start_year, use_gmip=use_gmip, pipeline_id=pipeline_id
     )
-
 
     project_dict = ar5_project_glaciers(
         preprocess_dict=preprocess_dict,

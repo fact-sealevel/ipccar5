@@ -7,6 +7,7 @@ import numpy as np
 from ipccar5.Import2lmData import Import2lmData, Filter2lmData
 import logging
 
+
 class ProjectionError(Exception):
     pass
 
@@ -30,7 +31,7 @@ def ar5_preprocess_glaciers(
     # Load the two-layer model data
     # if tlm_flag:  # may want to take out tlm_flag since it must be 1?
     # Import the data
-    
+
     tlm_dict = Import2lmData(
         "surface_temperature",
         scenario,
