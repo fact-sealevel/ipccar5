@@ -5,7 +5,7 @@
 import argparse
 import numpy as np
 from ipccar5.Import2lmData import Import2lmData, Filter2lmData
-
+import logging
 
 class ProjectionError(Exception):
     pass
@@ -30,6 +30,7 @@ def ar5_preprocess_glaciers(
     # Load the two-layer model data
     # if tlm_flag:  # may want to take out tlm_flag since it must be 1?
     # Import the data
+    
     tlm_dict = Import2lmData(
         "surface_temperature",
         scenario,
@@ -37,13 +38,11 @@ def ar5_preprocess_glaciers(
         refyear_end=refyear_end,  # was 2005,
         climate_fname=climate_fname,
     )
-
     # Filter the data for the appropriate years
     filtered_data_dict = Filter2lmData(
         tlm_dict,
         filter_years=np.arange(start_year, end_year),  # was 2301)
     )
-
     # Extract the years
     data_years = filtered_data_dict["years"]
 
@@ -55,7 +54,6 @@ def ar5_preprocess_glaciers(
     # Find the mean and sd of the ensemble
     temp_mean = np.nanmean(temp_samples, axis=0)
     temp_sd = np.nanstd(temp_samples, axis=0)
-
     # else:
     # Define the input data files
     # temp_mean_filename = "{0}_temperature_mean.nc".format(scenario)
@@ -100,6 +98,7 @@ def ar5_preprocess_glaciers(
         "temp_samples": temp_samples,
         "inttemp_samples": inttemp_samples,
     }
+    logging.info("Preprocess complete.")
     return output
 
 

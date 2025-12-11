@@ -94,8 +94,8 @@ def ar5_project_glaciers(
 
     # Generate perfectly correlated samples
     # For each quantity, mean + standard deviation * normal random number
-    # z = rng.standard_normal(ntsamps)[:, np.newaxis]
-    # zit = inttemp_mean + (inttemp_sd * z)
+    z = rng.standard_normal(ntsamps)[:, np.newaxis]
+    zit = inttemp_mean + (inttemp_sd * z)
 
     # z = temp_samples
     # zit = inttemp_samples
@@ -120,7 +120,7 @@ def ar5_project_glaciers(
     # nrpergl = nr / ngl
 
     # Generate samples for methodologies
-    # r = rng.standard_normal(nr)
+    r = rng.standard_normal(nr)
 
     # Initialize the data structure to hold the glacier samples
     total_glac_samps = np.full((nsamps, nyr), np.nan)
@@ -195,7 +195,7 @@ def ar5_project_glaciers(
             "scenario": scenario,
         },
     )
-
+    ds['sea_level_change'] = ds['sea_level_change'].astype('float32')
     ds.to_netcdf(
         global_output_file,
         mode="w",
