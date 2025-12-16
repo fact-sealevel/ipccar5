@@ -5,5 +5,10 @@ The format is based on[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), 
 
 ## [Unreleased]
 
+## [0.1.0] - 2025-12-16
+- Initial release
 ### Added
-- Added scripts from original ipccar5/glaciers FACTS module and refactored them to work as a CLICK CLI app. 
+- Added scripts from original ipccar5/glaciers FACTS module and refactored them to work as a CLICK CLI app.
+
+[Unrelease]: https://github.com/fact-sealevel/ipccar5/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/fact-sealevel/ipccar5/releases/tag/v0.1.0
