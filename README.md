@@ -52,7 +52,7 @@ To run the glaciers sub-module:
 docker run --rm \
 -v /path/to/data/input:/mnt/ipccar5_data_in:ro \
 -v /path/to/data/input:/mnt/ipccar5_data_out \
-ghcr.io/fact-sealevel/ipccar5:latest glaciers \
+ghcr.io/fact-sealevel/ipccar5:0.1.0 glaciers \
 --scenario 'ssp585' --nsamps 500 \
 --climate-fname /mnt/ipccar5_data_in/temperature_climate.nc \
 --glacier-fraction-file /mnt/ipccar5_data_in/glacier_fraction.txt \
