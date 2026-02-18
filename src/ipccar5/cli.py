@@ -65,7 +65,7 @@ def main():
     "--pipeline-id", type=str, help="Unique identifier for this instance of the module"
 )
 @click.option(
-    "--climate-fname",
+    "--climate-data-file",
     type=str,
     help="NetCDF4/HDF5 file containing surface temperature data (this should be a fair output)",
     required=True,
@@ -163,7 +163,7 @@ def glaciers(
     end_year,
     tlm_flag,
     pipeline_id,
-    climate_fname,
+    climate_data_file,
     rng_seed,
     pyear_start,
     pyear_end,
@@ -189,7 +189,7 @@ def glaciers(
         end_year,
         tlm_flag,
         pipeline_id,
-        climate_fname=climate_fname,
+        climate_fname=climate_data_file,
     )
 
     fit_dict = ar5_fit_glaciers(
@@ -260,7 +260,7 @@ def glaciers(
     "--pipeline-id", type=str, help="Unique identifier for this instance of the module"
 )
 @click.option(
-    "--climate-fname",
+    "--climate-data-file",
     type=str,
     help="NetCDF4/HDF5 file containing surface temperature data (this should be a fair output)",
     required=True,
@@ -378,7 +378,7 @@ def icesheets(
     start_year,
     tlm_flag,
     pipeline_id,
-    climate_fname,
+    climate_data_file,
     refyear_start,
     refyear_end,
     rng_seed,
@@ -408,7 +408,7 @@ def icesheets(
         startyr=start_year,
         tlm_flag=tlm_flag,
         pipeline_id=pipeline_id,
-        climate_fname=climate_fname,
+        climate_fname=climate_data_file,
         refyear_start=refyear_start,
         refyear_end=refyear_end,
     )
