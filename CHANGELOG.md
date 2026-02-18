@@ -5,7 +5,8 @@ The format is based on[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), 
 
 ## [Unreleased]
 
-
+### Added
+- Multi-architecture build for container added to container registry in CI/CD ([PR 10](https://github.com/fact-sealevel/ipccar5/pull/10), [@e-marshall](https://github.com/e-marshall))
 
 ## [0.1.1] - 2026-02-18
 
