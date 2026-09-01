@@ -523,7 +523,7 @@ def make_projection_ds(
             "locations": (("locations",), locations),
         },
         attrs={
-            "description": f"Global SLR contribution from {ice_source} from the Bamber et al. 2019 IPCC AR6 workflow",
+            "description": f"Global SLR contribution from {ice_source} from the  ice sheet projection approach adopted by IPCC AR5 WG1",
             "history": "Created " + time.ctime(time.time()),
             "scenario": scenario,
             "baseyear": baseyear,
