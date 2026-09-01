@@ -5,17 +5,19 @@ The format is based on[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), 
 
 ## [Unreleased]
 
+### Fixed
+- Typo in attrs of gslr dataset written by ipccar5-icesheets ([PR #12](https://github.com/fact-sealevel/ipccar5/pull/12), [@e-marshall](https://github.com/e-marshall)) 
 
 
 ## [0.1.2] - 2026-02-18
 
 ### Added
-- Multi-architecture build for container added to container registry in CI/CD ([PR 10](https://github.com/fact-sealevel/ipccar5/pull/10), [@e-marshall](https://github.com/e-marshall))
+- Multi-architecture build for container added to container registry in CI/CD ([PR #10](https://github.com/fact-sealevel/ipccar5/pull/10), [@e-marshall](https://github.com/e-marshall))
 
 ## [0.1.1] - 2026-02-18
 
 ### Changed
-- Fixed names of CLI args to match other modules ([PR 9](https://github.com/fact-sealevel/ipccar5/pull/9),[@e-marshall](https://github.com/e-marshall))
+- Fixed names of CLI args to match other modules ([PR #9](https://github.com/fact-sealevel/ipccar5/pull/9),[@e-marshall](https://github.com/e-marshall))
 
 ## [0.1.0] - 2025-12-16
 - Initial release
@@ -23,6 +25,6 @@ The format is based on[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), 
 - Added scripts from original ipccar5/glaciers FACTS module and refactored them to work as a CLICK CLI app.
 
 [Unreleased]: https://github.com/fact-sealevel/ipccar5/compare/v0.1.2...HEAD
-[0.1.2]: https://github.com/fact-sealevel/ipccar5/releases/tag/v0.1.2
-[0.1.1]: https://github.com/fact-sealevel/ipccar5/releases/tag/v0.1.1
+[0.1.2]: https://github.com/fact-sealevel/ipccar5/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/fact-sealevel/ipccar5/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/fact-sealevel/ipccar5/releases/tag/v0.1.0
