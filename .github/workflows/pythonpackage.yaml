@@ -38,3 +38,7 @@ jobs:
       - name: Lint check with ruff
         run: |
           uv run ruff check . --output-format=github --ignore F841
+
+      - name: Test with pytest
+        run: |
+          uv run pytest
