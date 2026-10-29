@@ -1,5 +1,8 @@
 # ipccar5
 
+> [!note]
+> This branch is a modified version of the original ipccar5 module to demonstrate use of a module producing GMSL projections in conjunction with the new [grd-fingerprinting](https://github.com/fact-sealevel/grd-fingerprinting/tree/prototype) module prototype that generates RSL projections. 
+
 ## ipccar5-glaciers
 This is an application that repicates the `ipccar5` sub-module of FACTS 1; it implements the glacier projection approach adopted by IPCC AR5 WG1. It was translated from IDL to Python 2.7 by Jonathan Gregory 23.10.19 and adapted for use in FACTS by Gregory Garner 20 November 2019.
 
